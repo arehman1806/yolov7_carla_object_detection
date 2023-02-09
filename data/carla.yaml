@@ -1,0 +1,14 @@
+# Carla object detection dataset (https://github.com/DanielHfnr/Carla-Object-Detection-Dataset)
+
+# download command/URL (optional)
+download: bash ./scripts/get_carla.sh
+
+train: ./carla/train_yolo.txt    
+val: ./carla/val_yolo.txt       
+test: ./carla/test_yolo.txt  
+
+# number of classes
+nc: 5
+
+# class names
+names: [ 'vehicle', 'bike', 'motobike', 'traffic_light', 'traffic_sign' ]
