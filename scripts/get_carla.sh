@@ -9,3 +9,6 @@ f='v'$version'.zip'
 echo 'Downloading' $url$f ' ...'
 curl -L $url$f -o $f && unzip -q $f -d $d && rm $f
 mv Carla-Object-Detection-Dataset-$version carla
+rm -rf ./carla/labels
+mv ./carla/labels_yolo_format ./carla/labels
+echo 'Done'
