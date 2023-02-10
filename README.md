@@ -1,46 +1,63 @@
-# Official YOLOv7
+# Fork of the Official YOLOv7 Repository
 
 Implementation of paper - [YOLOv7: Trainable bag-of-freebies sets new state-of-the-art for real-time object detectors](https://arxiv.org/abs/2207.02696)
 
+Can be used to train a object detector on a CARLA simulator object detection dataset. You can find the dataset in my other repository here: https://github.com/DanielHfnr/Carla-Object-Detection-Dataset 
+
 ## Installation
 
-TODO
+Create a virtual environment and install required packages. You can also use a docker environment, please check the original repo for that.
+
+```bash
+python3 -m pip install --user virtualenv   # Install if needed
+python3 -m venv venv
+pip install -r requirements.txt
+```
+
+Afterwards you can activate the virtual environment.
+
+```bash
+source venv/bin/activate
+```
+
 ## Training
 
-Data preparation
+Data preparation. Download CARLA object detection dataset.
 
 ``` shell
-bash scripts/get_coco.sh
+bash scripts/get_carla.sh
 ```
 
 Single GPU training
 
 ``` shell
 # train p5 models
-python train.py --workers 8 --device 0 --batch-size 32 --data data/coco.yaml --img 640 640 --cfg cfg/training/yolov7.yaml --weights '' --name yolov7 --hyp data/hyp.scratch.p5.yaml
+python train.py --workers 8 --device 0 --batch-size 32 --data data/carla.yaml --img 640 640 --cfg cfg/training/yolov7.yaml --weights '' --name yolov7 --hyp data/hyp.scratch.p5.yaml
 
 # train p6 models
-python train_aux.py --workers 8 --device 0 --batch-size 16 --data data/coco.yaml --img 1280 1280 --cfg cfg/training/yolov7-w6.yaml --weights '' --name yolov7-w6 --hyp data/hyp.scratch.p6.yaml
+python train_aux.py --workers 8 --device 0 --batch-size 16 --data data/carla.yaml --img 640 640 --cfg cfg/training/yolov7-w6.yaml --weights '' --name yolov7-w6 --hyp data/hyp.scratch.p6.yaml
 ```
 
 Multiple GPU training
 
 ``` shell
 # train p5 models
-python -m torch.distributed.launch --nproc_per_node 4 --master_port 9527 train.py --workers 8 --device 0,1,2,3 --sync-bn --batch-size 128 --data data/coco.yaml --img 640 640 --cfg cfg/training/yolov7.yaml --weights '' --name yolov7 --hyp data/hyp.scratch.p5.yaml
+python -m torch.distributed.launch --nproc_per_node 4 --master_port 9527 train.py --workers 8 --device 0,1,2,3 --sync-bn --batch-size 128 --data data/carla.yaml --img 640 640 --cfg cfg/training/yolov7.yaml --weights '' --name yolov7 --hyp data/hyp.scratch.p5.yaml
 
 # train p6 models
-python -m torch.distributed.launch --nproc_per_node 8 --master_port 9527 train_aux.py --workers 8 --device 0,1,2,3,4,5,6,7 --sync-bn --batch-size 128 --data data/coco.yaml --img 1280 1280 --cfg cfg/training/yolov7-w6.yaml --weights '' --name yolov7-w6 --hyp data/hyp.scratch.p6.yaml
+python -m torch.distributed.launch --nproc_per_node 8 --master_port 9527 train_aux.py --workers 8 --device 0,1,2,3,4,5,6,7 --sync-bn --batch-size 128 --data data/carla.yaml --img 640 640 --cfg cfg/training/yolov7-w6.yaml --weights '' --name yolov7-w6 --hyp data/hyp.scratch.p6.yaml
 ```
 
 ## Inference
 
 On video:
+
 ``` shell
 python detect.py --weights yolov7.pt --conf 0.25 --img-size 640 --source yourvideo.mp4
 ```
 
 On image:
+
 ``` shell
 python detect.py --weights yolov7.pt --conf 0.25 --img-size 640 --source inference/images/horses.jpg
 ```
