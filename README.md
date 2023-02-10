@@ -1,8 +1,8 @@
-# Fork of the Official YOLOv7 Repository
+# YOLOv7 Repository for Object Detection in CARLA Simulator
 
 Implementation of paper - [YOLOv7: Trainable bag-of-freebies sets new state-of-the-art for real-time object detectors](https://arxiv.org/abs/2207.02696)
 
-Can be used to train a object detector on a CARLA simulator object detection dataset. You can find the dataset in my other repository here: https://github.com/DanielHfnr/Carla-Object-Detection-Dataset 
+Can be used to train an object detector on a CARLA simulator object detection dataset. You can find the dataset in my other repository here: https://github.com/DanielHfnr/Carla-Object-Detection-Dataset 
 
 ## Installation
 
