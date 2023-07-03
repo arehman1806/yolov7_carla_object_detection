@@ -118,9 +118,8 @@ class CarlaObjectDetector:
         if classify:
             pred = apply_classifier(pred, modelc, img, im0s)
 
-        # okay until here
-
         # Process detections
+        np_dets = []
         for i, det in enumerate(pred):  # detections per image
             if webcam:  # batch_size >= 1
                 p, s, im0, frame = path[i], '%g: ' % i, im0s[i].copy(), 0
@@ -137,13 +136,19 @@ class CarlaObjectDetector:
                 det[:, :4] = scale_coords(img.shape[2:], det[:, :4], im0.shape).round()
 
                 # Print results
-                for c in det[:, -1].unique():
-                    n = (det[:, -1] == c).sum()  # detections per class
-                    s += f"{n} {names[int(c)]}{'s' * (n > 1)}, "  # add to string
+                # for c in det[:, -1].unique():
+                #     n = (det[:, -1] == c).sum()  # detections per class
+                #     s += f"{n} {names[int(c)]}{'s' * (n > 1)}, "  # add to string
 
                 # Write results
+               
                 for *xyxy, conf, cls in reversed(det):
                     xyxy = [int(x) for x in xyxy]  # Ensure xyxy values are integers
+
+                    conf = conf.cpu().item()
+                    cls = cls.cpu().item()
+                    det_list = xyxy + [conf, cls]
+                    np_dets.append(det_list)
 
                     if save_img or view_img:  # Add bbox to image
                         label = f'{names[int(cls)]} {conf:.2f}'
@@ -153,7 +158,7 @@ class CarlaObjectDetector:
             # Print time (inference + NMS)
             # print(f'{s}Done. ({(1E3 * (t2 - t1)):.1f}ms) Inference, ({(1E3 * (t3 - t2)):.1f}ms) NMS')
 
-            return im0
+            return np_dets, im0
            
     def letterbox(self, img, new_shape=(640, 640), color=(114, 114, 114), auto=True, scaleFill=False, scaleup=True, stride=32):
         # Resize and pad image while meeting stride-multiple constraints
@@ -190,11 +195,12 @@ class CarlaObjectDetector:
 
 if __name__ == '__main__':
     img_path = "./carla/images/test/Town05_004080.png"
-    img_path = "./recording/607.png"
+    # img_path = "./recording/607.png"
     img0 = cv2.imread(img_path)
     obj_detector = CarlaObjectDetector()
     
-    annotated = obj_detector.detect(img0)
+    dets, annotated = obj_detector.detect(img0)
+    print(dets)
 
     cv2.imwrite("annotated.png", annotated)
 
