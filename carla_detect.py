@@ -21,12 +21,14 @@ class CarlaObjectDetector:
     def __init__(self) -> None:
         # weights = './runs/train/yolov74/weights/best.pt'
         weights = './runs/train/yolov74/weights/yolov7.pt'
+        # weights = "./runs/train/carla_obj_detect4/weights/best.pt"
         device = 'cuda' if torch.cuda.is_available() else 'cpu'
+        self.img_size = 1216
         self.model = attempt_load(weights, map_location=device)  # load FP32 model
         parser = argparse.ArgumentParser()
         parser.add_argument('--weights', nargs='+', type=str, default='yolov7.pt', help='model.pt path(s)')
         parser.add_argument('--source', type=str, default='inference/images', help='source')  # file/folder, 0 for webcam
-        parser.add_argument('--img-size', type=int, default=640, help='inference size (pixels)')
+        parser.add_argument('--img-size', type=int, default=self.img_size, help='inference size (pixels)')
         parser.add_argument('--conf-thres', type=float, default=0.25, help='object confidence threshold')
         parser.add_argument('--iou-thres', type=float, default=0.45, help='IOU threshold for NMS')
         parser.add_argument('--device', default='', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
@@ -47,7 +49,7 @@ class CarlaObjectDetector:
         set_logging()
         self.device = select_device(self.opt.device)
         self.stride = int(self.model.stride.max())
-        self.imgsz = check_img_size(640, s=self.stride)  # check img_size
+        self.imgsz = check_img_size(self.img_size, s=self.stride)  # check img_size
         # print(opt)
 
     def detect(self, im0s, save_img=False):
@@ -147,11 +149,14 @@ class CarlaObjectDetector:
 
                     conf = conf.cpu().item()
                     cls = cls.cpu().item()
+                    if cls != 2:
+                        continue
                     det_list = xyxy + [conf, cls]
                     np_dets.append(det_list)
 
                     if save_img or view_img:  # Add bbox to image
                         label = f'{names[int(cls)]} {conf:.2f}'
+                        # print(f"{label}, {cls}")
                         color = tuple(colors[int(cls)])  # Convert the color to a tuple
                         plot_one_box(xyxy, im0, label=label, color=(0, 255, 0), line_thickness=1)
 
@@ -160,7 +165,7 @@ class CarlaObjectDetector:
 
             return np_dets, im0
            
-    def letterbox(self, img, new_shape=(640, 640), color=(114, 114, 114), auto=True, scaleFill=False, scaleup=True, stride=32):
+    def letterbox(self, img, new_shape=(1200, 1200), color=(114, 114, 114), auto=True, scaleFill=False, scaleup=True, stride=32):
         # Resize and pad image while meeting stride-multiple constraints
         shape = img.shape[:2]  # current shape [height, width]
         if isinstance(new_shape, int):
