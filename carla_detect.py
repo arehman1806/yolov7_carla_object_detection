@@ -20,16 +20,17 @@ class CarlaObjectDetector:
 
     def __init__(self) -> None:
         # weights = './runs/train/yolov74/weights/best.pt'
-        weights = './runs/train/yolov74/weights/yolov7.pt'
+        # weights = './runs/train/yolov74/weights/yolov7.pt'
         # weights = "./runs/train/carla_obj_detect4/weights/best.pt"
+        weights = './runs/train/yolov7_instance_segmented_dataset_attempt5/weights/best.pt'
         device = 'cuda' if torch.cuda.is_available() else 'cpu'
-        self.img_size = 1216
+        self.img_size = 608
         self.model = attempt_load(weights, map_location=device)  # load FP32 model
         parser = argparse.ArgumentParser()
         parser.add_argument('--weights', nargs='+', type=str, default='yolov7.pt', help='model.pt path(s)')
         parser.add_argument('--source', type=str, default='inference/images', help='source')  # file/folder, 0 for webcam
         parser.add_argument('--img-size', type=int, default=self.img_size, help='inference size (pixels)')
-        parser.add_argument('--conf-thres', type=float, default=0.25, help='object confidence threshold')
+        parser.add_argument('--conf-thres', type=float, default=0.80, help='object confidence threshold')
         parser.add_argument('--iou-thres', type=float, default=0.45, help='IOU threshold for NMS')
         parser.add_argument('--device', default='', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
         parser.add_argument('--view-img', action='store_true', help='display results')
@@ -149,8 +150,8 @@ class CarlaObjectDetector:
 
                     conf = conf.cpu().item()
                     cls = cls.cpu().item()
-                    if cls != 2:
-                        continue
+                    # if cls != 2:
+                    #     continue
                     det_list = xyxy + [conf, cls]
                     np_dets.append(det_list)
 
