@@ -1,0 +1,1 @@
+python -m torch.distributed.launch --nproc_per_node 4 --master_port 9527 train.py --workers 8 --sync-bn --batch-size 128 --data data/carla_mlp_cluster.yaml --img 608 608 --cfg cfg/training/yolov7-carla.yaml --weights '' --name yolov7 --hyp data/hyp.scratch.p5.yaml

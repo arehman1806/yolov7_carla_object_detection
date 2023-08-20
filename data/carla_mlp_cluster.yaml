@@ -1,0 +1,12 @@
+# download command/URL (optional)
+# download: bash ./scripts/get_carla.sh
+
+train: /disk/scratch/s1829279/yolov7_carla_object_detection/carla/train_yolo.txt    
+val: /disk/scratch/s1829279/yolov7_carla_object_detection/carla/val_yolo.txt       
+test: /disk/scratch/s1829279/yolov7_carla_object_detection/carla/test_yolo.txt  
+
+# number of classes
+nc: 1
+
+# class names
+names: [ 'vehicle']
